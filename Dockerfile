@@ -1,18 +1,17 @@
-# Use an official OpenJDK runtime as a parent image
+# ใช้ OpenJDK 8 JRE บน Alpine
 FROM openjdk:8-jre-alpine
 
-# set shell to bash
-# source: https://stackoverflow.com/a/40944512/3128926
-RUN apk update && apk add bash
+# ติดตั้ง bash (ไม่จำเป็นสำหรับ production แต่ช่วยดีบั๊กได้)
+RUN apk update && apk add --no-cache bash
 
-# Set the working directory to /app
+# สร้าง working directory
 WORKDIR /app
 
-# Copy the fat jar into the container at /app
-COPY /target/docker-java-app-example.jar /app
+# คัดลอกไฟล์ JAR ของโปรเจกต์
+COPY target/docker-java-app-example.jar /app/
 
-# Make port 8080 available to the world outside this container
+# เปิด port 8080 (Render ใช้ PORT จาก environment)
 EXPOSE 8080
 
-# Run jar file when the container launches
+# กำหนด command เพื่อรันแอป
 CMD ["java", "-jar", "docker-java-app-example.jar"]
