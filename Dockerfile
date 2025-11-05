@@ -1,17 +1,13 @@
-# ใช้ OpenJDK 8 JRE บน Alpine
-FROM openjdk:8-jre-alpine
-
-# ติดตั้ง bash (ไม่จำเป็นสำหรับ production แต่ช่วยดีบั๊กได้)
-RUN apk update && apk add --no-cache bash
-
-# สร้าง working directory
+# ===== Stage 1: Build JAR =====
+FROM maven:3.8.7-openjdk-8 AS builder
 WORKDIR /app
+COPY . .
+RUN mvn clean package -DskipTests
 
-# คัดลอกไฟล์ JAR ของโปรเจกต์
-COPY target/docker-java-app-example.jar /app/
-
-# เปิด port 8080 (Render ใช้ PORT จาก environment)
+# ===== Stage 2: Runtime =====
+FROM openjdk:8-jre-alpine
+RUN apk update && apk add --no-cache bash
+WORKDIR /app
+COPY --from=builder /app/target/docker-java-app-example.jar /app/app.jar
 EXPOSE 8080
-
-# กำหนด command เพื่อรันแอป
-CMD ["java", "-jar", "docker-java-app-example.jar"]
+CMD ["java", "-jar", "app.jar"]
