@@ -12,7 +12,7 @@ public class DataController {
 	
 	@RequestMapping(value = "/time-now", method = RequestMethod.GET)
 	public String getTimenow() {
-		return new Date();
+	    return new Date().toString();
 	}
 
 }
